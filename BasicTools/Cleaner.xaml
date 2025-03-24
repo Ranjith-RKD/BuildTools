@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BasicTool.Cleaner"
+             Title="Cleaner"
+             xmlns:local="clr-namespace:BasicTool">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:SelectionColorConverter x:Key="SelectionColorConverter" />
+            <local:SelectionIconColorConverter x:Key="SelectionIconColorConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowSpacing="15" RowDefinitions="50,60,*" ColumnDefinitions="*,*"  ColumnSpacing="15" Padding="15">
+        <Label Text="Windows" FontAttributes="Bold" FontSize="Large" Grid.Row="0" HorizontalOptions="Center"/>
+        <Label Text="Android" FontAttributes="Bold" FontSize="Large" Grid.Row="0" Grid.Column="1" HorizontalOptions="Center"/>
+        <!--Search and Sort Section-->
+        <Grid Grid.Row="1" Grid.Column="0" ColumnDefinitions="*, Auto, Auto, Auto" RowDefinitions="Auto" ColumnSpacing="10" Padding="5,0,5,0" BackgroundColor="#F0F0F0">
+
+            <!--Search Bar-->
+            <SearchBar Grid.Column="0" Placeholder="Search apps" TextChanged="OnSearchTextChanged" />
+
+            <!--Sort Button-->
+            <Button Grid.Column="1" Text="Sort &#xF07D;" FontFamily="{OnPlatform WinUI=appicons.ttf#, Android=appicons.ttf#}" Clicked="OnSortClicked" />
+
+            <Button Grid.Column="2" Text="Select All" Clicked="SelectAll" />
+
+            <Button Grid.Column="3" Text="&#xF014; Uninstall" FontFamily="{OnPlatform WinUI=appicons.ttf#, Android=appicons.ttf#}" BackgroundColor="Red" TextColor="White" Clicked="AndroidDelete" />
+        </Grid>
+
+        <!--Search and Action Section-->
+        <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="*, Auto, Auto, Auto" RowDefinitions="Auto" ColumnSpacing="10" Padding="5,0,5,0" BackgroundColor="#F0F0F0">
+
+            <!--Search Bar-->
+            <SearchBar Grid.Column="0" Placeholder="Search apps" TextChanged="AndroidOnSearchTextChanged" />
+
+            <!--Sort Button-->
+            <Button Grid.Column="1" Text="Sort &#xF07D;" FontFamily="{OnPlatform WinUI=appicons.ttf#, Android=appicons.ttf#}" Clicked="OnAndroidSortClicked" />
+
+            <Button Grid.Column="2" Text="Select All" Clicked="AndroidSelectAll" />
+
+            <Button Grid.Column="3" Text="&#xF014; Uninstall" FontFamily="{OnPlatform WinUI=appicons.ttf#, Android=appicons.ttf#}" BackgroundColor="Red" TextColor="White" Clicked="AndroidDelete" />
+        </Grid>
+
+        <!--App Collection-->
+        <CollectionView Grid.Row="2" x:Name="AppCollection" Grid.Column="0"  SelectionMode="Multiple" ItemsSource="{Binding AppsInfo}" SelectionChanged="CollectionView_SelectionChanged" VerticalScrollBarVisibility="Never" Margin="0,10,5,0">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Padding="10" Margin="0,0,0,10" BackgroundColor="White" ColumnDefinitions="Auto, 40, *, Auto, Auto" ColumnSpacing="10">
+
+                             <!--Selection Icon--> 
+                            <Label Grid.Column="0" WidthRequest="30" HeightRequest="30" FontFamily="{OnPlatform WinUI=appicons.ttf#, Android=appicons.ttf#}" Text="&#xF14A;" FontSize="18" TextColor="{Binding Selected, Converter={StaticResource SelectionIconColorConverter}}" VerticalOptions="Center" HorizontalOptions="Center" IsVisible="{Binding ShowSelected}" />
+
+                             <!--App Logo--> 
+                            <Image Grid.Column="1" Source="{Binding Logo}" Aspect="AspectFit" VerticalOptions="Center" HorizontalOptions="Center" WidthRequest="40" HeightRequest="40" />
+
+                             <!--App Info--> 
+                            <StackLayout Grid.Column="2" VerticalOptions="Center" Spacing="5">
+                                <Label Text="{Binding DisplayName}" FontSize="16" FontAttributes="Bold" TextColor="Black" />
+                                <Label Text="{Binding VersionDate}" FontSize="12" TextColor="#757575" />
+                            </StackLayout>
+
+                             <!--Version and Date--> 
+                            <Label Grid.Column="3" Text="{Binding VersionDate}" FontSize="12" TextColor="#757575" VerticalOptions="Center" HorizontalOptions="End" />
+
+                             <!--App Size--> 
+                            <Label Grid.Column="4" Text="{Binding Size}" FontSize="14" TextColor="Gray" VerticalOptions="Center" HorizontalOptions="End" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+             <!--Android App Collection-->
+        <CollectionView Grid.Column="1" Grid.Row="2"  x:Name="AndroidAppCollection" SelectionMode="None" ItemsSource="{Binding AndriodDeviceInfo}" VerticalScrollBarVisibility="Never"
+                    Margin="5,10,0,0" >
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <local:ExpanderView>
+                            <local:ExpanderView.Header>
+                                <StackLayout BackgroundColor="LightGray" Padding="15">
+                                    <Label Text="{Binding DisplayName}" FontSize="20" TextColor="Black" />
+                                </StackLayout>
+                            </local:ExpanderView.Header>
+
+                            <local:ExpanderView.Content>
+                            <CollectionView ItemsSource="{Binding AppsInfo}" SelectionMode="Multiple"  SelectionChanged="AndroidCollectionView_SelectionChanged" SelectedItems="{Binding SelectedApps}">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Padding="10" Margin="0,0,0,10" BackgroundColor="White" ColumnDefinitions="Auto, 40, *, Auto, Auto" ColumnSpacing="10">
+
+                                                <!-- Selection Icon -->
+                                                <Label Grid.Column="0" WidthRequest="30" HeightRequest="30" FontFamily="{OnPlatform WinUI=appicons.ttf#, Android=appicons.ttf#}" Text="&#xF14A;" FontSize="18" TextColor="{Binding Selected, Converter={StaticResource SelectionIconColorConverter}}" VerticalOptions="Center" HorizontalOptions="Center" IsVisible="{Binding ShowSelected}" />
+
+                                                <!-- App Logo -->
+                                                <Image Grid.Column="1" Source="{Binding Logo}" Aspect="AspectFit" VerticalOptions="Center" HorizontalOptions="Center" WidthRequest="40" HeightRequest="40" />
+
+                                                <!-- App Info -->
+                                                <StackLayout Grid.Column="2" VerticalOptions="Center" Spacing="5">
+                                                    <Label Text="{Binding DisplayName}" FontSize="16" FontAttributes="Bold" TextColor="Black" />
+                                                    <Label Text="{Binding VersionDate}" FontSize="12" TextColor="#757575" />
+                                                </StackLayout>
+
+                                                <!-- Version and Date -->
+                                                <Label Grid.Column="3" Text="{Binding VersionDate}" FontSize="12" TextColor="#757575" VerticalOptions="Center" HorizontalOptions="End" />
+
+                                                <!-- App Size -->
+                                                <Label Grid.Column="4" Text="{Binding Size}" FontSize="14" TextColor="Gray" VerticalOptions="Center" HorizontalOptions="End" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+                            </local:ExpanderView.Content>
+                        </local:ExpanderView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+</ContentPage>
